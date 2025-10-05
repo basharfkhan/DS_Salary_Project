@@ -11,7 +11,7 @@ import urllib.parse
 import os
 
 #  Author : Bashar , arapfaik 
-#  url https://github.com/arapfaik/scraping-glassdoor-selenium 
+#  url: https://github.com/arapfaik/scraping-glassdoor-selenium 
 
 def safe_find_text_from(el, by, value, default="-1"):
     """Get text safely from an element. Returns default if not found."""
