@@ -71,8 +71,10 @@ Exploratory Data Analysis was performed to visualize salary trends, feature dist
 
 Key findings included:  
 - Salary variation across different states and company ratings.  
-- Visualization of the most common keywords using a word cloud (`wordcloud.png`).  
+- Visualization of the most common keywords using a word cloud. 
 - Clear evidence that technical skills and company-level factors significantly influence salary levels.
+  
+![wordcloud](wordcloud.png)
 
 ## Model Building
 
@@ -105,12 +107,3 @@ Developed a Flask-based REST API to serve the trained model for real-time salary
 - Input data is automatically formatted to match the model’s training feature structure.  
 - Returns a salary prediction in JSON format.
 
-**Example Request:**  
-```bash
-curl -X POST http://127.0.0.1:5000/predict      -H "Content-Type: application/json"      -d "{"input": [3.6, 0, 0, 0, 1, 34, 0, 0, 0, 1, 4608, 0, 0, 1, 0, 0, 0, 0, 0]}"
-```
-
-**Example Response:**  
-```json
-{"response": 82.3}
-```
