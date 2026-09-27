@@ -1,0 +1,14 @@
+# Core analysis + modelling (data_cleaning.py, model_building.py, data_eda.ipynb)
+pandas==2.3.2
+numpy==2.3.3
+scikit-learn==1.7.2
+matplotlib==3.10.6
+seaborn==0.13.2
+
+# Scraping (Glassdoor_Scraper.py, GS Test.py)
+selenium==4.35.0
+webdriver-manager==4.0.2
+
+# Word cloud cells at the end of data_eda.ipynb
+wordcloud
+nltk

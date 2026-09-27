@@ -1,8 +1,8 @@
 # Data Science Salary Estimator: Project Overview
 
-Developed a predictive tool that estimates Data Science salaries based on job descriptions, location, company attributes, and technical skill requirements — designed to help job seekers make informed salary negotiations.
+Developed a predictive tool that estimates Data Science salaries based on job descriptions, location, company attributes, and technical skill requirements, designed to help job seekers make informed salary negotiations.
 
-- Built a full end-to-end machine learning pipeline to predict average salaries with a Mean Absolute Error (MAE) of approximately $11K.
+- Built a full end-to-end machine learning pipeline to predict average salaries with a Mean Absolute Error (MAE) of approximately $12.8K.
 - Scraped and cleaned job postings from Glassdoor using Python and Selenium.
 - Engineered features from job descriptions, quantifying the importance of tools and technologies such as Python, Excel, AWS, Spark, and TensorFlow.
 - Implemented model optimization using GridSearchCV across Linear Regression, Lasso Regression, and Random Forest Regressor, achieving the best overall performance.
@@ -16,6 +16,14 @@ Developed a predictive tool that estimates Data Science salaries based on job de
 **To install dependencies:**  
 ```bash
 pip install -r requirements.txt
+```
+
+**Pipeline run order:**
+
+```bash
+python data_cleaning.py     # glassdoor_jobs.csv    -> salary_data_cleaned.csv
+jupyter notebook data_eda.ipynb        # salary_data_cleaned.csv -> eda_data.csv
+jupyter notebook model_training.ipynb  # eda_data.csv -> FlaskAPI/models/model_file.p
 ```
 
 **References:**  
@@ -43,6 +51,25 @@ Each record included the following attributes:
 - Revenue  
 - Competitors  
 
+### Scope and limitations
+
+The modelling in this repo runs on `glassdoor_jobs.csv`, a snapshot captured in
+April 2024. That snapshot is the project's data source and is committed here so
+every downstream step is reproducible.
+
+`Glassdoor_Scraper.py` is retained as the collection code, but it is **card-level
+only**: it reads the fields visible on a search-results card (title, company,
+rating, location, salary, snippet, date posted, job link) and does not open each
+posting's detail page. It therefore does not reproduce the richer fields the
+model uses, such as Industry, Sector, Revenue, Company Size, and Founded date,
+and its output columns do not match what `data_cleaning.py` expects.
+
+Recovering those fields means visiting every posting individually, which is slow
+and runs into Glassdoor's bot detection. Since Glassdoor's markup changes
+frequently, keeping a detail-page scraper working is ongoing maintenance with no
+benefit to the modelling work, so the captured dataset is used instead. Treat the
+scraper as a reference implementation rather than a working ingestion step.
+
 ## Data Cleaning
 
 After collecting the raw data, extensive preprocessing was performed to prepare the dataset for modeling.  
@@ -53,7 +80,7 @@ The following changes and new variables were created:
 - Removed rows lacking salary data.  
 - Parsed company rating from text.  
 - Extracted state information from job location.  
-- Created a binary indicator for whether the job is located at the company’s headquarters.  
+- Created a binary indicator for whether the job is located at the company's headquarters.  
 - Converted the year founded into company age.  
 - Created binary indicators for the presence of technical skills:  
   - Python  
@@ -85,17 +112,17 @@ Key findings included:
 ### Models Evaluated
 Three regression models were tested using **Mean Absolute Error (MAE)** as the evaluation metric, selected for its interpretability and robustness against outliers.
 
-1. **Multiple Linear Regression** – Established a baseline for comparison.  
-2. **Lasso Regression** – Applied regularization to handle sparse categorical data.  
-3. **Random Forest Regressor** – Chosen for its ability to capture nonlinear relationships and feature interactions.
+1. **Multiple Linear Regression**: established a baseline for comparison.  
+2. **Lasso Regression**: applied regularization to handle sparse categorical data.  
+3. **Random Forest Regressor**: chosen for its ability to capture nonlinear relationships and feature interactions.
 
 ## Model Evaluation
 
 | Model                 | MAE (Mean Absolute Error) |
 | --------------------- | ------------------------- |
-| **Random Forest**     | **11.22**                 |
-| **Linear Regression** | 18.86                     |
-| **Ridge Regression**  | 19.67                     |
+| **Random Forest**     | **12.80**                 |
+| **Linear Regression** | 18.84                     |
+| **Lasso Regression**  | 19.65                     |
 
 The Random Forest model demonstrated the best performance, achieving the lowest prediction error on both training and validation sets.
 
@@ -104,6 +131,31 @@ The Random Forest model demonstrated the best performance, achieving the lowest 
 Developed a Flask-based REST API to serve the trained model for real-time salary predictions.
 
 - The API accepts job listing information as JSON input.  
-- Input data is automatically formatted to match the model’s training feature structure.  
+- Input data is automatically formatted to match the model's training feature structure.  
 - Returns a salary prediction in JSON format.
+
+### Running it locally
+
+```bash
+cd FlaskAPI
+pip install -r requirements.txt
+python app.py
+```
+
+Then, from a second shell:
+
+```bash
+cd FlaskAPI
+python sample_request.py
+```
+
+Expected output, using the sample vector in `data_input.py`:
+
+```
+{'response': 92.91111111111111}
+```
+
+The endpoint is POST-only and expects exactly 169 features, matching the column
+list stored alongside the model in `models/model_file.p`. A request with the
+wrong number of features returns HTTP 400 naming the mismatch.
 

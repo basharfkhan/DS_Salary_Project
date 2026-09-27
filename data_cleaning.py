@@ -1,6 +1,9 @@
 # author: bashar 
 
 import pandas as pd
+from datetime import date
+
+CURRENT_YEAR = date.today().year
 
 df = pd.read_csv('glassdoor_jobs.csv')
 # show = df.head()
@@ -39,7 +42,7 @@ df.job_state.value_counts()
 df['same_state'] = df.apply(lambda x: 1 if x.Location == x.Headquarters else 0, axis=1) #If job is in same state as headquarters
 
 #age of company 
-df['age'] = df.Founded.apply(lambda x: x if x < 1 else 2025 - x)
+df['age'] = df.Founded.apply(lambda x: x if x < 1 else CURRENT_YEAR - x)
 # show = df[['Company Name', 'Founded', 'age']].head(10)
 # print(show)
 

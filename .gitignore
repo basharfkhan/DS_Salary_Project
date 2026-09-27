@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+FlaskAPI/flask_env/
+venv/
+.venv/
+
+# Local driver binaries (Glassdoor_Scraper.py uses webdriver-manager instead)
+chromedriver.exe
+
+# Scraper intermediate/partial output
+glassdoor_jobs_up_to_*.csv
+glassdoor_jobs_final.csv
+
+# Secrets
+.env
